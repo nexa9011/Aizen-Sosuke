@@ -1,0 +1,179 @@
+:root{
+  --glow: 0 0 30px rgba(160,120,255,0.85);
+  --accent: rgba(200,160,255,0.9);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:#000;
+  overflow:hidden;
+  color:#ddd;
+}
+
+/* full-bleed background using provided image */
+.bg{
+  position:fixed;
+  inset:0;
+  background-image: url('assets/bg.png');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(40%) contrast(110%) brightness(70%);
+  transform: scale(1.05);
+  animation: slowZoom 30s linear infinite, chroma 6s linear infinite;
+  z-index:0;
+}
+
+/* chromatic aberration effect */
+@keyframes chroma{
+  0%{filter:grayscale(40%) brightness(70%) contrast(110%) drop-shadow(0 0 0 rgba(0,0,0,0))}
+  50%{filter:grayscale(40%) brightness(72%) contrast(115%)}
+  100%{filter:grayscale(40%) brightness(70%) contrast(110%)}
+}
+@keyframes slowZoom{ from{transform:scale(1.03)} to{transform:scale(1.08)} }
+
+.center{
+  position:relative;
+  z-index:3;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:2rem;
+  pointer-events:none;
+}
+
+/* name styling with glow & glitch */
+.name{
+  font-size: clamp(28px, 7vw, 64px);
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:#fff;
+  margin-bottom:1rem;
+  text-shadow: var(--glow);
+  transform: translateZ(0);
+  animation: flicker 3s infinite;
+  mix-blend-mode:screen;
+}
+
+/* subtle flicker */
+@keyframes flicker{
+  0%,95%,100%{opacity:1}
+  96%{opacity:0.85; transform:translateY(-1px)}
+  97%{opacity:0.9; transform:translateY(1px)}
+}
+
+/* glitch pseudo-layers */
+.name::before, .name::after{
+  content: attr(data-text);
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  pointer-events:none;
+  opacity:0.7;
+}
+.name::before{color:rgba(255,0,80,0.6); clip-path: inset(0 0 66% 0);}
+.name::after{color:rgba(0,200,255,0.6); clip-path: inset(66% 0 0 0);}
+
+/* description box */
+.desc{
+  max-width:900px;
+  margin:0 auto;
+  font-size: clamp(12px, 1.6vw, 18px);
+  color:rgba(230,230,230,0.92);
+  backdrop-filter: blur(4px) saturate(0.8);
+  padding:1rem 1.2rem;
+  border-radius:12px;
+  margin-top:0.6rem;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  opacity:0.95;
+  pointer-events:auto;
+}
+
+/* view counter */
+.views{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:10;
+  background:rgba(0,0,0,0.45);
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:600;
+  backdrop-filter:blur(6px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+#count{ color: var(--accent); text-shadow: var(--glow); }
+
+/* animated fog layer */
+.fog{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  background: radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.06), transparent 15%),
+              radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.05), transparent 18%);
+  opacity:0.9;
+  pointer-events:none;
+  animation: drift 28s linear infinite;
+  mix-blend-mode:screen;
+}
+@keyframes drift{
+  0%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-20px) scale(1.02)}
+  100%{transform:translateY(0) scale(1)}
+}
+
+/* responsive */
+@media (max-width:600px){
+  .desc{ font-size:14px; padding:0.8rem; }
+}
+
+
+/* lighting shimmer on the name */
+.name{
+  position: relative;
+  overflow: visible;
+  -webkit-mask-image: none;
+}
+.name::after{
+  content: '';
+  position: absolute;
+  left: -40%;
+  top: -10%;
+  width: 30%;
+  height: 120%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0) 100%);
+  mix-blend-mode: overlay;
+  opacity: 0.0;
+  pointer-events: none;
+  animation: lightSweep 3.8s linear infinite;
+}
+@keyframes lightSweep{
+  0%{ left: -40%; opacity: 0; filter: blur(8px) }
+  10%{ opacity: 0.25 }
+  45%{ left: 80%; opacity: 0.9; filter: blur(2px) }
+  70%{ opacity: 0.2 }
+  100%{ left: 180%; opacity: 0 }
+}
+
+/* occasional pulse background behind name for drama */
+.name::before{
+  content:'';
+  position:absolute;
+  inset:-6px;
+  z-index:-1;
+  border-radius:8px;
+  background: radial-gradient(60% 40% at 50% 30%, rgba(160,120,255,0.08), transparent 30%);
+  filter: blur(14px);
+  opacity:0.9;
+  animation: namePulse 6s ease-in-out infinite;
+}
+@keyframes namePulse{
+  0%{ opacity:0.6; transform:scale(1) }
+  50%{ opacity:1; transform:scale(1.02) }
+  100%{ opacity:0.6; transform:scale(1) }
+}
